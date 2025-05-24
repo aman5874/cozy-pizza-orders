@@ -35,7 +35,7 @@ export const DashboardSkeleton = () => (
         <GlassCard key={i} className="p-6">
           <EnhancedSkeleton className="h-8 w-32 mb-6" variant="shimmer" shape="rounded" />
           <div className="space-y-4">
-            <EnhancedSkeleton className="h-64 w-full" variant="wave" shape="rounded" />
+            <EnhancedSkeleton className="h-64 w-full" variant="pulse" shape="rounded" />
           </div>
         </GlassCard>
       ))}
