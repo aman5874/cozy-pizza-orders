@@ -1,10 +1,11 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange } from '@/components/DateRangePicker';
+import { DashboardSkeleton } from '@/components/LoadingSkeleton';
+import ErrorDisplay from '@/components/ErrorDisplay';
 import { 
   ChartContainer, 
   ChartTooltip, 
@@ -17,6 +18,45 @@ import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, ChefHat, File
 
 const Analytics = () => {
   const [dateRange, setDateRange] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Simulate loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const refetch = () => {
+    setLoading(true);
+    setError(null);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <DashboardSkeleton />
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <ErrorDisplay 
+          error={error} 
+          onRetry={refetch}
+          title="Failed to load analytics data"
+        />
+      </DashboardLayout>
+    );
+  }
 
   const salesData = [
     { month: 'Jan', revenue: 4200, orders: 142 },
