@@ -5,9 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShoppingCart, Users, TrendingUp, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Index = () => {
   const { user, loading } = useAuth();
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const handleOAuthCallback = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      
+      if (accessToken) {
+        console.log('OAuth callback detected on index page');
+        // The auth provider will handle the token processing and redirect
+        return;
+      }
+    };
+
+    handleOAuthCallback();
+  }, []);
 
   if (loading) {
     return (
@@ -17,7 +34,11 @@ const Index = () => {
     );
   }
 
-  if (user) {
+  // Don't redirect if we're processing OAuth callback
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const isOAuthCallback = hashParams.get('access_token');
+  
+  if (user && !isOAuthCallback) {
     return <Navigate to="/dashboard" replace />;
   }
 

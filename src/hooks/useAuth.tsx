@@ -19,6 +19,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Handle OAuth callback if tokens are present in URL hash
+    const handleOAuthCallback = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      
+      if (accessToken) {
+        console.log('OAuth callback detected, processing tokens...');
+        try {
+          // Set the session using the tokens from the URL
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (error) throw error;
+          
+          if (session) {
+            setSession(session);
+            setUser(session.user);
+            setLoading(false);
+            
+            // Clear the URL hash and redirect to dashboard
+            window.history.replaceState({}, document.title, window.location.pathname);
+            window.location.href = '/dashboard';
+            return;
+          }
+        } catch (error) {
+          console.error('Error processing OAuth callback:', error);
+        }
+      }
+    };
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -29,12 +57,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+    // Handle OAuth callback first, then get initial session
+    handleOAuthCallback().then(() => {
+      // Only get initial session if we didn't handle OAuth callback
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (!hashParams.get('access_token')) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          console.log('Initial session:', session);
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -44,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        redirectTo: `${window.location.origin}/`
       }
     });
     if (error) {
