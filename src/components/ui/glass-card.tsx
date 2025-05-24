@@ -29,21 +29,21 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     }
 
     const opacityClasses = {
-      low: "bg-white/5 dark:bg-black/5",
-      medium: "bg-white/10 dark:bg-black/10",
-      high: "bg-white/20 dark:bg-black/20"
+      low: "bg-white/5 dark:bg-white/5",
+      medium: "bg-white/10 dark:bg-white/10",
+      high: "bg-white/20 dark:bg-white/15"
     }
 
     return (
       <div
         ref={ref}
         className={cn(
-          "relative rounded-3xl transition-all duration-300",
+          "relative rounded-2xl transition-all duration-200",
           blurClasses[blur],
           opacityClasses[opacity],
-          withBorder && "border border-white/20 dark:border-white/10",
+          withBorder && "border border-border",
           withShadow && "shadow-glass",
-          hover && "hover:bg-white/15 dark:hover:bg-black/15 hover:scale-[1.02] hover:shadow-glow",
+          hover && "hover:bg-white/15 dark:hover:bg-white/15 hover:scale-[1.01]",
           className
         )}
         {...props}

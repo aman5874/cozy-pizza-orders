@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils"
 
 interface EnhancedSkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "shimmer" | "pulse" | "wave"
+  variant?: "default" | "shimmer" | "pulse"
   shape?: "rectangle" | "circle" | "rounded"
 }
 
@@ -15,19 +15,19 @@ function EnhancedSkeleton({
   const shapeClasses = {
     rectangle: "rounded-md",
     circle: "rounded-full",
-    rounded: "rounded-2xl"
+    rounded: "rounded-xl"
   }
 
   const variantClasses = {
-    default: "animate-pulse bg-muted",
+    default: "bg-muted",
     shimmer: "bg-gradient-to-r from-muted via-muted/50 to-muted bg-[length:200%_100%] animate-shimmer",
-    pulse: "animate-pulse bg-gradient-to-r from-muted to-muted/60",
-    wave: "animate-bounce-gentle bg-muted"
+    pulse: "animate-pulse bg-muted"
   }
 
   return (
     <div
       className={cn(
+        "transition-opacity duration-200",
         variantClasses[variant],
         shapeClasses[shape],
         className
